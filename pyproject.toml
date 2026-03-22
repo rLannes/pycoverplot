@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pycoverplot"
+version = "0.1.0"
+description = "BAM coverage plot"
+dependencies = [
+    "numpy",
+    "matplotlib",
+    "gtf_pyparser @ file:///lab/solexa_yamashita/people/Romain/Code/PackageCommonBioinfo/gtf_pyparser",                        # your own package on the same cluster
+    "Rust_covpyo3 @ file:///lab/solexa_yamashita/people/Romain/Code/PackageCommonBioinfo/Rust_covpyo3",
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = { text = "CC-BY-4.0" }
+authors = [
+    { name = "Romain Lannes", email = "rlannes@wi.mit.edu" }
+]
+keywords = ["bioinformatics", "BAM", "visualisation", "plotting", "rnaseq",  "genomics", "Alignment"]
+classifiers = [
+    "Development Status :: 5 - Stable",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+]
+
+
+[project.scripts]
+pycoverplot = "pycoverplot.coverage_plot:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["coverageplot*"]
+
