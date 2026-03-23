@@ -1,14 +1,9 @@
-import argparse
+
 from copy import deepcopy
 import logging
 import numpy as np
-import matplotlib as mpl
-from matplotlib.lines import Line2D
-import matplotlib.pyplot as plt
-from multiprocessing import Process
 from multiprocessing import Pool
 from pathlib import Path
-import pickle
 import Rust_covpyo3
 from gtf_pyparser import Interval, get_intron
 
@@ -210,6 +205,11 @@ class Coverage():
         else: 
             return (this_cover, this_intervall)
         
+    def empyt(self):
+        if len(self.cover) > 0:
+            return False
+        return True
+    
     # return cover and intervall for all three
     # intron here is exon + intron (full)
     def get_intron_partial(self, max_prop):

@@ -4,16 +4,25 @@ Plot read coverage from BAM files over genomic regions. Built with RNA-seq in mi
 
 Coverage is computed with a fast Rust backend. Reads are counted per strand and per base, then rendered as a publication-ready matplotlib figure. Multiple experimental groups can be overlaid on the same plot for direct visual comparison.
 
+
+Reading BAM files is pretty fast due to the Rust backend, but reading GTF is the longest time sink in most cases. To speed it up, you can use pickle.
+Run:
+pycoverplot_gtf --file <gtf file> --pkl <pkl file>
+This will read the GTF into a pickle file. You can then use this pickle file instead of the GTF. It is significantly faster.
+
+⚠️ Warning: You should not use pickle files you have not created yourself, as there is a security risk in running unknown pickle files.
 ---
 
 ## Installation
 
 ```bash
-pip install pycoverplot
+# it is not on pip serveur yet
+pip install -e /lab/solexa_yamashita/people/Romain/Code/PackageCommonBioinfo/pycoverplot
 ```
 
-All dependencies, including the Rust backend (`Rust_covpyo3`) and the GTF parser (`gtf_pyparser`), are installed automatically.
+All dependencies are made by me, and are installed automatically. Including the Rust backend (`Rust_covpyo3`) and the GTF parser (`gtf_pyparser`).
 
+you may need to install glibc.
 ---
 
 ## Requirements
@@ -28,10 +37,10 @@ All dependencies, including the Rust backend (`Rust_covpyo3`) and the GTF parser
 
 ### Command line
 
-Plot coverage for two groups over an annotated gene:
+Plot coverage of exon (see --exon argument to include intron) for two groups over an annotated gene:
 
 ```bash
-python plot_coverage.py \
+pycoverplot 
     --bam ctrl_rep1.bam ctrl_rep2.bam --color PALETTE_BLUE \
     --bam treat_rep1.bam treat_rep2.bam --color PALETTE_RED \
     --group_name ctrl treatment \
@@ -43,7 +52,7 @@ python plot_coverage.py \
 Plot coverage over a custom genomic interval instead of an annotated gene:
 
 ```bash
-python plot_coverage.py \
+pycoverplot
     --bam ctrl.bam --bam treat.bam \
     --inter chr1,+,1000000,1050000 \
     --out figure.pdf
@@ -57,7 +66,7 @@ The scripting API follows three steps: build your groups, fetch coverage, then p
 
 ```python
 from pathlib import Path
-from pycoverplot import Groups, get_intervall, color_list, get_file_path, update_group_coverage, plot
+from pycoverplot import Groups, get_intervall, color_list, get_file_path, update_group_coverage, plot, get_reads_fromstar
 
 # --- 1. Define groups ---
 
@@ -87,8 +96,8 @@ get_reads_fromstar(groups)
 
 # Retrieve intervals from a GTF file
 target_intervals = get_intervall(
-    gtf="annotation.gtf",
-    gene_id=["ENSMUSG00000028494"],
+    gtf="flybase.gtf",
+    gene_id=["FBgn0267432"],
     inter=None
 )
 
@@ -103,7 +112,7 @@ for target_name, target_interval in target_intervals.items():
 
     # --- 3. Plot ---
 
-    plot.plot(
+    plot(
         groups,
         exon="intron_partial",
         intron_prop=0.3,
@@ -111,6 +120,7 @@ for target_name, target_interval in target_intervals.items():
         norm_factor=1_000_000,
         title="Coverage — " + target_name,
         out="figure.pdf",
+        color_even="gainsboro" # hilight the exon
     )
 ```
 

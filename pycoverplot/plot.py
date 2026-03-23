@@ -1,17 +1,14 @@
-import argparse
-from copy import deepcopy
+
+
 import logging
 import numpy as np
 import matplotlib as mpl
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
-from multiprocessing import Process
-from multiprocessing import Pool
+
 from pathlib import Path
-import pickle
-import Rust_covpyo3
-from gtf_pyparser import Interval, get_intron
-from coverage import Coverage
+#from gtf_pyparser import Interval, get_intron
+#from coverage import Coverage
 # version april 12 2024
 
 mpl.rcParams['pdf.fonttype'] = 42
@@ -111,10 +108,11 @@ def plot(groups, exon="exon", intron_prop=0.30, N=None, alpha=1,
         for this in group:
 
             try:
-                assert this["cover"].cover
+                assert this["cover"].cover.size > 0
             except:
-                logging.ERROR("cannot plot cover for file {} no cover! skipping it".format(this["filepath"]))
-                continue
+                logging.error(this)
+                logging.error("cannot plot cover for file {} no cover! skipping it".format(this["filepath"]))
+                raise
 
             cov, interval = this["cover"].get_cover(exon, intron_prop)   
 

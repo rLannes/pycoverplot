@@ -33,8 +33,9 @@ classifiers = [
 
 [project.scripts]
 pycoverplot = "pycoverplot.coverage_plot:main"
+pycoverplot_gtf = "pycoverplot.coverage_plot:main_pkl"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["coverageplot*"]
+include = ["pycoverplot*"]
 

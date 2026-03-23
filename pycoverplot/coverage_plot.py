@@ -2,15 +2,13 @@ import argparse
 from dataclasses import dataclass, field
 import textwrap
 from copy import deepcopy
-import coverage
-import plot
+from  . import coverage
+from  . import plot
 import logging
-import math
 import matplotlib as mpl
-from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
 from pathlib import Path
-import unittest
+import pickle
 import re
 import matplotlib.colors as mcolors
 from gtf_pyparser import Interval, parse_gtf
@@ -80,7 +78,7 @@ def get_valid_cmap(name: str):
 
 
 # else use a valid cmap (non qualitative ones)
-def color_list(this_color, size):
+def color_list(this_color, size, PALETTE_DICT=PALETTE_DICT):
     """
     Resolve and validate a color specification into a list of hex color strings.
 
@@ -112,9 +110,9 @@ def color_list(this_color, size):
     AssertionError
         If any resolved color string is not a valid hex color.
     """
-    
-    if isinstance(this_color, str) and this_color in PALETTE_DICT:
-        this_color = PALETTE_DICT.get(this_color)
+    #print(this_color, PALETTE_DICT)
+    if isinstance(this_color[0], str) and this_color[0] in PALETTE_DICT:
+        this_color = PALETTE_DICT.get(this_color[0])
     
     if (cmap := get_valid_cmap(this_color[0])):
         cpt = 0.2
@@ -129,7 +127,7 @@ def color_list(this_color, size):
         try:
             assert REG_IS_HEXA.fullmatch(e)
         except:
-            logger.erro("{}: is not a valid hexa decimal color", e)
+            logger.error("{}: is not a valid hexa decimal color", e)
             raise AssertionError
     return this_color
 
@@ -174,6 +172,9 @@ def get_intervall(gtf, gene_id, inter):
     """
     Build a dictionary of genomic intervals from either a GTF file or
     explicit interval strings.
+
+    gtf parsing is slow to spead things up you can run pycoverplot_gtf --gtf <gtf file> --pkl <pickle file.pkl>
+    this will read the gtf and create a pkl file wich is much faster to read. So if you give this function a pkl it will unpickle it and consider it is the gtf.
 
     When ``inter`` is provided, each string is parsed with ``REG_IS_INTERVALL``
     and assembled into ``Interval`` objects with ``feature_`` set to
@@ -235,7 +236,12 @@ def get_intervall(gtf, gene_id, inter):
         results["customInterval"] =  sub_res
         return results
     
-    gtf_obj = parse_gtf(gtf)
+    if str(gtf).split(".")[-1] == "pkl":
+        logging.info("reading gtf from pickle file: {}".format(gtf))
+        with open(gtf, "rb") as f:
+            gtf_obj = pickle.load(f)
+    else:
+        gtf_obj = parse_gtf(gtf)
 
     for gene in gene_id:
         if ':' in gene:
@@ -254,6 +260,13 @@ def get_intervall(gtf, gene_id, inter):
             logger.error("gene_id {} nor found".format(gene_id))
     return results
             
+def gtf_to_pkl(gtf, out_):
+    dict = parse_gtf(gtf)
+    with open(out_, "wb") as fo:
+        pickle.dump(obj=dict, file=fo, protocol=pickle.HIGHEST_PROTOCOL)
+
+
+
 
 @dataclass
 class Groups:
@@ -504,6 +517,13 @@ def get_reads_fromstar(groups):
 
 if __name__ == "__main__":
 
+    main()
+
+
+
+
+def main():
+
     logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M')
@@ -648,6 +668,7 @@ if __name__ == "__main__":
              "concatenated in the plot and any genomic space between them is "
              "ignored, which is useful for visualising discontinuous regions such "
              "as manually defined exons. When this option is set it overrides "
+             "CHRM and strand must be the same"
              "--gtf and --gene_id, and intron proportion scaling (--intron_prop) "
              "is not available. "
              "Example: --inter chr1,+,1000000,1050000 chr1,+,1100000,1150000")
@@ -736,10 +757,29 @@ if __name__ == "__main__":
                          help="Number of parallel threads to use when processing BAM files. "
                     "Increasing this can significantly speed up execution when working "
                     "with many or large BAM files. Default: 1.")
+    
+    parse.add_argument("--loglevel", "-v", default="INFO",
+                        metavar="STR", choices=["INFO", "DEBUG", "WARNING", "ERROR"],
+                         help="log level")
 
     args = parse.parse_args() 
 
     # validate argument
+    level = logging.INFO
+    match args.loglevel:
+        case "INFO":
+            level = logging.INFO
+        case "DEBUG":
+            level = logging.DEBUG
+        case "WARNING":
+            level = logging.WARNING
+        case "ERROR":
+            level = logging.ERROR
+
+    logging.basicConfig(level=level,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M', force=True)
+    
 
     bam_dir = args.bam_dir
     bam_files = args.bam
@@ -800,10 +840,14 @@ if __name__ == "__main__":
         groups.append(Groups(this_color, bam_path))
         groups[-1].group_name = groups_name[i]
 
+        if not args.NoNormalize and args.read_count:
+            this_count = args.read_count[i]
+            try:
+                assert len(bam_files) == len(this_count)
+            except:
+                logging.error("if using read count must match number of bam_files: {} bam file {} reads count".format((len(bam_files)), (len(this_count))))
 
 
-    if args.read_count: # TODO later
-        pass
     if not args.NoNormalize:
         get_reads_fromstar(groups)
 
@@ -837,4 +881,33 @@ if __name__ == "__main__":
                 linewidth=args.linewidth, color_even=args.color_even,
                 color_odds=args.color_odd, title=args.title + " " + target_name,
                 out=args.out_file, return_fig=None)
+
+
+
+def main_pkl():
+
+    logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M')
+    
+    logging.getLogger("fontTools").setLevel(logging.ERROR)
+
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--file")
+    parser.add_argument("--pkl", help="must not exist, delete boferore regenerating it (if you ever need to)")
+    args = parser.parse_args()
+    pkl = args.pkl
+    try:
+        assert pkl.split(".")[-1] == "pkl"
+    except:
+        logging.error("pkl argument must end with the .pkl extension")
+        raise AssertionError
+    
+    try:
+        assert not Path(pkl).exists()
+    except:
+        logging.error("pkl must nort exist erase before regenerating")
+        raise AssertionError
+    gtf_to_pkl(args.file, args.pkl)
 
