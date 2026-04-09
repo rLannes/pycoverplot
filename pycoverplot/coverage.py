@@ -156,7 +156,12 @@ class Coverage():
             this_cover.append(cov) # append or extend?
         this_cover = np.concatenate(this_cover)
         if this.strand == '-':
-            return (this_cover[::-1], this_intervall[::-1])
+            ends = this_intervall[-1].end
+            news = [Interval(e.chr, ends - e.end,
+                      ends - e.start, e.strand,
+                      e.phase, e.attribute)
+                    for e in this_intervall]
+            return (this_cover[::-1], news)
         else: 
             return (this_cover, this_intervall)
         
@@ -201,7 +206,13 @@ class Coverage():
             this_cover.append(cov)
         this_cover = np.concatenate(this_cover)
         if this.strand == '-':
-            return (this_cover[::-1], this_intervall[::-1])
+            ends = this_intervall[-1].end
+            news = [Interval(e.chr, ends - e.end,
+                      ends - e.start, e.strand,
+                      e.phase, e.attribute)
+                    for e in this_intervall]
+            return (this_cover[::-1], news)
+            #return (this_cover[::-1], this_intervall[::-1])
         else: 
             return (this_cover, this_intervall)
         
@@ -302,7 +313,13 @@ class Coverage():
                 this_cover.append(cov)
         this_cover = np.concatenate(this_cover)
         if this.strand == '-':
-            return (this_cover[::-1], this_intervall[::-1])
+            ends = this_intervall[-1].end
+            news = [Interval(e.chr, ends - e.end,
+                      ends - e.start, e.strand,
+                      e.phase, e.attribute)
+                    for e in this_intervall]
+            return (this_cover[::-1], news)
+            #return (this_cover[::-1], this_intervall[::-1])
         else: 
             return (this_cover, this_intervall)
 

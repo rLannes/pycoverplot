@@ -145,7 +145,7 @@ def plot(groups, exon="exon", intron_prop=0.30, N=None, alpha=1,
     plt.gca().legend(handles=custom_lines, labels=legend_name,  bbox_to_anchor=(1.05, 1), loc='upper left'   )
         
     plt.margins(x=0)
-    plt.margins(y=0)
+    #plt.margins(y=0)
 
 
 

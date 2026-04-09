@@ -77,7 +77,6 @@ from pycoverplot.coverage_plot import (
     Groups,
     get_intervall,
     update_group_coverage,
-    update_group_coverage,
     color_list,
     get_file_path,
     get_reads_fromstar,

@@ -111,8 +111,13 @@ def color_list(this_color, size, PALETTE_DICT=PALETTE_DICT):
         If any resolved color string is not a valid hex color.
     """
     #print(this_color, PALETTE_DICT)
-    if isinstance(this_color[0], str) and this_color[0] in PALETTE_DICT:
+    if isinstance(this_color, str) and this_color in PALETTE_DICT:
+        this_color = PALETTE_DICT.get(this_color)
+    
+    if isinstance(this_color, list) and isinstance(this_color[0], str) and this_color[0] in PALETTE_DICT:
         this_color = PALETTE_DICT.get(this_color[0])
+    
+
     
     if (cmap := get_valid_cmap(this_color[0])):
         cpt = 0.2
@@ -448,6 +453,7 @@ def update_group_coverage(groups, target_interval, lib_scheme="frFirstStrand", n
                                                 lib_scheme, n_thread=n_thread,
                                                 mapq=mapq, flag_in=flag_in, flag_out=flag_out) 
     for g in groups:
+        g.cover = []
         g.add_cover(cover_dict)
 
 
