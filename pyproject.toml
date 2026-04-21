@@ -9,8 +9,8 @@ description = "BAM coverage plot"
 dependencies = [
     "numpy",
     "matplotlib",
-    "gtf_pyparser @ file:///lab/solexa_yamashita/people/Romain/Code/PackageCommonBioinfo/gtf_pyparser",                        # your own package on the same cluster
-    "Rust_covpyo3 @ file:///lab/solexa_yamashita/people/Romain/Code/PackageCommonBioinfo/Rust_covpyo3",
+    "gtf_pyparser @ https://github.com/rLannes/gtf_pyparser",
+    "Rust_covpyo3 @ https://github.com/rLannes/Rust_covpyo3",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
