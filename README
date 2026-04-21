@@ -10,7 +10,7 @@ Run:
 pycoverplot_gtf --file <gtf file> --pkl <pkl file>
 This will read the GTF into a pickle file. You can then use this pickle file instead of the GTF. It is significantly faster.
 
-⚠️ Warning: You should not use pickle files you have not created yourself, as there is a security risk in running unknown pickle files.
+⚠️ Warning: You should not use pickle files you have not created yourself, as there is a security risk in running unknown pickle files. you also may want to make sure they have not be tempered with.
 ---
 
 ## Installation
