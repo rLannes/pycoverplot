@@ -103,6 +103,9 @@ target_intervals = get_intervall(
 
 for target_name, target_interval in target_intervals.items():
 
+    for g in group:
+        g.cover = []
+
     update_group_coverage(
         groups,
         target_interval,
