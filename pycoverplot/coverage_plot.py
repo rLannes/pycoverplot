@@ -759,7 +759,7 @@ def main():
              "read counts rather than normalized depth.")
 
     parse.add_argument("--thread", "-t", default=1,
-                        metavar="INT",
+                        metavar="INT", type=int,
                          help="Number of parallel threads to use when processing BAM files. "
                     "Increasing this can significantly speed up execution when working "
                     "with many or large BAM files. Default: 1.")
@@ -880,7 +880,7 @@ def main():
 
         norm = True if not args.NoNormalize else False
         logging.info("plotting")
-        out_name = args.out_file.rsplit('.', maxsplit=1)[0] + "_" + target_name.replace(":", "_") + "_" + args.out_file.rsplit('.', maxsplit=1)[1]
+        out_name = args.out_file.rsplit('.', maxsplit=1)[0] + "_" + target_name.replace(":", "_") + "." + args.out_file.rsplit('.', maxsplit=1)[1]
         logging.info(f"plotting to {out_name}")
         plot.plot(groups, exon=args.exon, intron_prop=args.intron_prop,
                 N=args.smooth, alpha=args.alpha,
