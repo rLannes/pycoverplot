@@ -888,7 +888,7 @@ def main():
                 bg_color=args.bg_color, norm_factor=1_000_000,
                 linewidth=args.linewidth, color_even=args.color_even,
                 color_odds=args.color_odd, title=args.title + " " + target_name,
-                out=args.out_file, return_fig=None)
+                out=out_name, return_fig=None)
 
 
 
