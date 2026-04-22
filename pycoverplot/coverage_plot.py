@@ -880,6 +880,7 @@ def main():
 
         norm = True if not args.NoNormalize else False
         logging.info("plotting")
+        out_name = args.out_file.rsplit('.', maxsplit=1)[0] + "_" + target_name.replace(":", "_") + "_" + args.out_file.rsplit('.', maxsplit=1)[1]
         plot.plot(groups, exon=args.exon, intron_prop=args.intron_prop,
                 N=args.smooth, alpha=args.alpha,
                 width=args.width, height=args.height, normalize=norm,
