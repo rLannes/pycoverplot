@@ -27,32 +27,32 @@ REG_IS_INTERVALL = re.compile(r"^(\w+),([\+|\-]),(\d+)\,(\d+)")
 logger = logging.getLogger(__name__)
 
 
-PALETTE_BLUE = ["#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"]
-PALETTE_RED    = ["#fcbba1", "#fc9272", "#fb6a4a", "#de2d26", "#a50f15"]
-PALETTE_GREEN  = ["#edf8e9", "#bae4b3", "#74c476", "#31a354", "#006d2c"]
-PALETTE_ORANGE  = ["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"]
-PALETTE_GUGN = ["#f0f9e8", "#bae4bc", "#7bccc4", "#43a2ca", "#0868ac"]
-PALETTE_BUPL = ["#edf8fb", "#b3cde3", "#8c96c6", "#8856a7", "#810f7c"]
-PALETTE_GREY =  ["#d9d9d9", "#bdbdbd", "#969696", "#636363", "#252525"]
+PALETTE_BLUE = ["#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"][::-1]
+PALETTE_RED    = ["#fcbba1", "#fc9272", "#fb6a4a", "#de2d26", "#a50f15"][::-1]
+PALETTE_GREEN  = ["#edf8e9", "#bae4b3", "#74c476", "#31a354", "#006d2c"][::-1]
+PALETTE_ORANGE  = ["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"][::-1]
+PALETTE_GUGN = ["#f0f9e8", "#bae4bc", "#7bccc4", "#43a2ca", "#0868ac"][::-1]
+PALETTE_BUPL = ["#edf8fb", "#b3cde3", "#8c96c6", "#8856a7", "#810f7c"][::-1]
+PALETTE_GREY =  ["#d9d9d9", "#bdbdbd", "#969696", "#636363", "#252525"][::-1]
 
 PALETTE_DICT = {
-    "PALETTE_BLUE":["#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"],
-    "PALETTE_RED": ["#fcbba1", "#fc9272", "#fb6a4a", "#de2d26", "#a50f15"],
-    "PALETTE_GREEN": ["#edf8e9", "#bae4b3", "#74c476", "#31a354", "#006d2c"],
-    "PALETTE_ORANGE": ["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"],
-    "PALETTE_GUGN":["#f0f9e8", "#bae4bc", "#7bccc4", "#43a2ca", "#0868ac"],
-    "PALETTE_BUPL": ["#edf8fb", "#b3cde3", "#8c96c6", "#8856a7", "#810f7c"],
-    "PALETTE_GREY":  ["#d9d9d9", "#bdbdbd", "#969696", "#636363", "#252525"],
+    "PALETTE_BLUE":PALETTE_BLUE,
+    "PALETTE_RED": PALETTE_RED,
+    "PALETTE_GREEN": PALETTE_GREEN,
+    "PALETTE_ORANGE": PALETTE_ORANGE,
+    "PALETTE_GUGN":PALETTE_GUGN,
+    "PALETTE_BUPL": PALETTE_BUPL,
+    "PALETTE_GREY":  PALETTE_GREY,
 }
 
 PALETTE_LIST = [
-    ["#c6dbef", "#9ecae1", "#6baed6", "#3182bd", "#08519c"],
-    ["#fcbba1", "#fc9272", "#fb6a4a", "#de2d26", "#a50f15"],
-    ["#edf8e9", "#bae4b3", "#74c476", "#31a354", "#006d2c"],
-    ["#feedde", "#fdbe85", "#fd8d3c", "#e6550d", "#a63603"],
-    ["#f0f9e8", "#bae4bc", "#7bccc4", "#43a2ca", "#0868ac"],
-    ["#edf8fb", "#b3cde3", "#8c96c6", "#8856a7", "#810f7c"],
-    ["#d9d9d9", "#bdbdbd", "#969696", "#636363", "#252525"],
+    PALETTE_BLUE,
+    PALETTE_RED,
+    PALETTE_GREEN,
+    PALETTE_ORANGE,
+    PALETTE_GUGN,
+    PALETTE_BUPL,
+    PALETTE_GREY,
 ]
 
 
@@ -241,11 +241,20 @@ def get_intervall(gtf, gene_id, inter):
         results["customInterval"] =  sub_res
         return results
     
-    if str(gtf).split(".")[-1] == "pkl":
-        logging.info("reading gtf from pickle file: {}".format(gtf))
-        with open(gtf, "rb") as f:
-            gtf_obj = pickle.load(f)
+    gtf = str(gtf)
+    pkl_file = gtf + ".pbi"
+    bi_file = pkl_file + ".bi"
+    if Path(bi_file).is_file and Path(pkl_file).is_file:
+        logging.info("gtf index found:\n - {}\n - {}".format(pkl_file, bi_file))
+        gtf_obj = IndexGtf(pkl_file, bi_file)
+    #if str(gtf).split(".")[-1] == "pkl":
+    #    logging.info("reading gtf from pickle file: {}".format(gtf))
+    #    with open(gtf, "rb") as f:
+    #        gtf_obj = pickle.load(f)
     else:
+        logging.info("reading gtf file: {}".format(gtf))
+        logging.info("reading gtf file is very slow consider indexing your file using pycoverplot_gtf command")
+        logging.info("this would make this operation less than a second.")
         gtf_obj = parse_gtf(gtf)
 
     for gene in gene_id:
@@ -262,15 +271,53 @@ def get_intervall(gtf, gene_id, inter):
                 for tr_id in g.transcripts:
                     results["{}:{}".format(g.gene_id, tr_id)] = g.transcripts[tr_id].exons
         else:
-            logger.error("gene_id {} nor found".format(gene_id))
+            logger.error("gene_id {} not found".format(gene_id))
     return results
             
-def gtf_to_pkl(gtf, out_):
-    dict = parse_gtf(gtf)
-    with open(out_, "wb") as fo:
-        pickle.dump(obj=dict, file=fo, protocol=pickle.HIGHEST_PROTOCOL)
 
 
+def gtf_to_pkl(gtf_file):
+    gtf = parse_gtf(gtf_file)
+
+    pkl_file = gtf_file + ".pbi"
+    bi_file = pkl_file + ".bi"
+    logging.info("creating index found:\n - {}\n - {}".format(pkl_file, bi_file))
+        
+    with open(pkl_file, "wb") as fo, open(bi_file, "w") as findex:
+        
+        for g in gtf:
+            before = fo.tell()
+            pickle.dump(gtf[g], fo)
+            size = fo.tell() - before
+            findex.write("\t".join([g, str(before), str(size)])+"\n")
+
+def load_index(bi_file):
+    with open(bi_file, "r") as fi:
+        index = {}
+        for l in fi:
+            l = l.strip()
+            if not l:
+                continue
+            spt = l.split()
+            index[spt[0]] = (int(spt[1]), int(spt[2]))
+    return index
+    
+
+class IndexGtf():
+    def __init__(self, pkl_file , bi_file):
+        self.pkl_file = pkl_file
+        self.index = load_index(bi_file)
+    
+    def __getitem__(self, index):
+        if index not in self.index:
+            raise KeyError("{} not in index".format(index))
+        
+        start, len_ = self.index[index]
+        
+        with open(self.pkl_file, "rb") as fo:
+            fo.seek(start)
+            x = pickle.loads(fo.read(len_))
+        return x
 
 
 @dataclass
@@ -520,6 +567,8 @@ def get_reads_fromstar(groups):
                 logger.error("could not collect number of uniquely mapped reads")
                 raise AssertionError
             group.total_reads.append(tot_reads)
+
+
 
 if __name__ == "__main__":
 
@@ -902,20 +951,8 @@ def main_pkl():
 
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("--file")
-    parser.add_argument("--pkl", help="must not exist, delete boferore regenerating it (if you ever need to)")
+    parser.add_argument("--file", help="gtf file")
     args = parser.parse_args()
-    pkl = args.pkl
-    try:
-        assert pkl.split(".")[-1] == "pkl"
-    except:
-        logging.error("pkl argument must end with the .pkl extension")
-        raise AssertionError
     
-    try:
-        assert not Path(pkl).exists()
-    except:
-        logging.error("pkl must nort exist erase before regenerating")
-        raise AssertionError
-    gtf_to_pkl(args.file, args.pkl)
+    gtf_to_pkl(args.file)
 
