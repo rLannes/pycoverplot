@@ -247,10 +247,7 @@ def get_intervall(gtf, gene_id, inter):
     if Path(bi_file).is_file and Path(pkl_file).is_file:
         logging.info("gtf index found:\n - {}\n - {}".format(pkl_file, bi_file))
         gtf_obj = IndexGtf(pkl_file, bi_file)
-    #if str(gtf).split(".")[-1] == "pkl":
-    #    logging.info("reading gtf from pickle file: {}".format(gtf))
-    #    with open(gtf, "rb") as f:
-    #        gtf_obj = pickle.load(f)
+
     else:
         logging.info("reading gtf file: {}".format(gtf))
         logging.info("reading gtf file is very slow consider indexing your file using pycoverplot_gtf command")
@@ -364,6 +361,7 @@ class Groups:
         for b in self.bam_files:
             self.cover.append(cover_dict[b])
 
+
     def add_reads_count(self, dico_read):
         """
         Populate ``self.total_reads`` from a BAM-to-read-count mapping.
@@ -399,7 +397,8 @@ class Groups:
         for i in range(len(self.bam_files)):
             reads = None if not self.total_reads else self.total_reads[i]
             cover = None if not self.cover else self.cover[i]
-            yield {"filepath": self.bam_files[i], "color": self.colors[i], "group_name": self.group_name, "cover": cover, "total_reads": reads}
+            colors =  self.colors[0] if len(self.colors) == 1 else self.colors[i]
+            yield {"filepath": self.bam_files[i], "color": colors, "group_name": self.group_name, "cover": cover, "total_reads": reads}
 
 
 def get_mapped_read(file):
@@ -777,6 +776,7 @@ def main():
              "Accepts a named color or a hex RGB value (e.g. '#fdf3e3'). "
              "Use together with --color_even.")
     
+    plot_option_group.add_argument("--rasterize", action='store_true')
     plot_option_group.add_argument("--title", type=str, metavar="STRING", default="Title",
                                     help="base title for the plot")
 
@@ -806,6 +806,8 @@ def main():
 
     parse.add_argument("--NoNormalize", action='store_true', help="Disable depth normalization. Coverage values are displayed as raw "
              "read counts rather than normalized depth.")
+    
+    parse.add_argument("--average", action='store_true', help="plot the average of each bam group with 2* std envelope")
 
     parse.add_argument("--thread", "-t", default=1,
                         metavar="INT", type=int,
@@ -915,6 +917,9 @@ def main():
 
     for target_name, target_interval in intervall.items():
         dico_b = {}
+        for g in groups:
+            g.cover = []
+        
 
         logging.info("reading bam file getting value for {}.".format(target_name))
         cover_dict = coverage.get_Coverage_intervall(files, target_interval,
@@ -931,13 +936,15 @@ def main():
         logging.info("plotting")
         out_name = args.out_file.rsplit('.', maxsplit=1)[0] + "_" + target_name.replace(":", "_") + "." + args.out_file.rsplit('.', maxsplit=1)[1]
         logging.info(f"plotting to {out_name}")
+
+        rasterize = True if args.rasterize else False
         plot.plot(groups, exon=args.exon, intron_prop=args.intron_prop,
                 N=args.smooth, alpha=args.alpha,
                 width=args.width, height=args.height, normalize=norm,
                 bg_color=args.bg_color, norm_factor=1_000_000,
                 linewidth=args.linewidth, color_even=args.color_even,
                 color_odds=args.color_odd, title=args.title + " " + target_name,
-                out=out_name, return_fig=None)
+                out=out_name, return_fig=None, average=args.average, rasterize=rasterize)
 
 
 

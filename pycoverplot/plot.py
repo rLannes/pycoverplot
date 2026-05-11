@@ -19,7 +19,7 @@ mpl.rcParams['ps.fonttype'] = 42
 def plot(groups, exon="exon", intron_prop=0.30, N=None, alpha=1,
             width=5, height=8, normalize=True, bg_color=None,
             norm_factor=1_000_000, linewidth=1, color_even=None,
-            color_odds=None, title="NoTitle", out=None, return_fig=None):
+            color_odds=None, title="NoTitle", out=None, return_fig=None, average=None, rasterize=False):
     """
     Render per-sample read-coverage tracks for one or more groups of BAM
     files and optionally save the figure to disk.
@@ -104,6 +104,9 @@ def plot(groups, exon="exon", intron_prop=0.30, N=None, alpha=1,
 
     zorder = 1
     for group in groups:
+        cov_list = []
+        zorder_list = []
+        color_list = []
 
         for this in group:
 
@@ -121,10 +124,35 @@ def plot(groups, exon="exon", intron_prop=0.30, N=None, alpha=1,
 
             if N:
                 cov = np.convolve([x for x in cov], np.ones(N)/N, mode='same')
-
-            ax.plot(range(len(cov)), cov, alpha=alpha, color=this["color"], linewidth=linewidth, zorder=zorder)
+            cov_list.append(cov)
+            zorder_list.append(zorder)
+            color_list.append(this["color"])
             zorder += 1
-            
+
+
+        if average:
+            cov_list =  np.array(cov_list)
+            mean = np.mean(cov_list, axis=0)
+            std = np.std(cov_list, axis=0)
+
+            top_ = mean + (std * 2)
+            top_ = np.where(top_ > 0, top_, 0)
+            bot_ = mean - (std * 2)
+            bot_ = np.where(bot_ > 0, bot_, 0)
+
+            X = range(len(cov))
+            ax.plot(X, mean, alpha=alpha, color=color_list[0], linewidth=linewidth, zorder=zorder_list[0])
+            ax.fill_between(X, mean, top_, color=color_list[0], alpha=0.2, zorder=0)
+            ax.fill_between(X, mean, bot_, color=color_list[0], alpha=0.2, zorder=0)
+
+
+        else:
+            for i, cov in enumerate(cov_list):
+                ax.plot(range(len(cov)), cov, alpha=alpha, color=color_list[i], linewidth=linewidth, zorder=zorder_list[i])
+
+        
+        if rasterize:
+            ax.set_rasterization_zorder(zorder_list[-1])
 
     for i, inter in enumerate(interval):
 
@@ -151,7 +179,7 @@ def plot(groups, exon="exon", intron_prop=0.30, N=None, alpha=1,
 
     plt.title(title)
     if out:
-        plt.savefig(out, bbox_inches="tight", transparent=True)
+        plt.savefig(out, bbox_inches="tight")#, transparent=True)
 
     if return_fig:
         return fig

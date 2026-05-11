@@ -1,14 +1,14 @@
 # pycoverplot
 
-Plot read coverage from BAM files over genomic regions. Built with RNA-seq in mind but compatible with any aligned data in BAM format.
+Plot read coverage from BAM files over genomic regions. High speed (Rust backed) Built with RNA-seq in mind but compatible with any aligned data in BAM format.
 
 Coverage is computed with a fast Rust backend. Reads are counted per strand and per base, then rendered as a publication-ready matplotlib figure. Multiple experimental groups can be overlaid on the same plot for direct visual comparison.
 
 
-Reading BAM files is pretty fast due to the Rust backend, but reading GTF is the longest time sink in most cases. To speed it up, you can use pickle.
+Reading BAM files is pretty fast due to the Rust backend, but reading GTF is the longest time sink in most cases. To speed it up, you can create an index
 Run:
-pycoverplot_gtf --file <gtf file> --pkl <pkl file>
-This will read the GTF into a pickle file. You can then use this pickle file instead of the GTF. It is significantly faster.
+pycoverplot_gtf --file <gtf file> 
+This will read the GTF and create an index file and a pickle file. once that done it is transparent for you as pycoverplot check idf the index and pkl file exist, and if they do use them.
 
 ⚠️ Warning: You should not use pickle files you have not created yourself, as there is a security risk in running unknown pickle files. you also may want to make sure they have not be tempered with.
 ---
