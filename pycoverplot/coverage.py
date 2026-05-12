@@ -57,15 +57,15 @@ class Coverage():
             Exon intervals for the feature of interest. Intron intervals are
             derived automatically from the gaps between consecutive exons.
         """
-        self.intervalls = sorted(intervalls, key=lambda x: x.start)
+        self.intervalls = sorted(intervalls, key=lambda x: x["start"])
         self.intervalls.extend(get_intron(self.intervalls))
-        self.intervalls = sorted(self.intervalls, key=lambda x: x.start)
-        self.leftest_position = self.intervalls[0].start # need to remove this value for position to match the list coverage
+        self.intervalls = sorted(self.intervalls, key=lambda x: x["start"])
+        self.leftest_position = self.intervalls[0]["start"] # need to remove this value for position to match the list coverage
 
         # for plot want to return the corresponding cover and intervalls
         # i.e exons, partial intron.
         self.cover = None # is no array
-        self.strand = self.intervalls[0].strand
+        self.strand = self.intervalls[0]["strand"]
 
         
         self.cover_intron_compress = None
@@ -513,12 +513,12 @@ def get_Coverage_intervall(bam_files, intervalls, lib_scheme, n_thread=6, mapq=1
         corresponding ``Coverage`` object with ``.cover`` set.
     """
 
-    intervalls = sorted(intervalls, key = lambda x: x.start)
-    start = intervalls[0].start
-    end = intervalls[-1].end
+    intervalls = sorted(intervalls, key = lambda x: x["start"])
+    start = intervalls[0]["start"]
+    end = intervalls[-1]["end"]
     range_ = {
-                "strand": intervalls[0].strand,
-                "chr": intervalls[0].chr
+                "strand": intervalls[0]["strand"],
+                "chr": intervalls[0]["chr"]
              }
     if start < end:
         range_["start"] = start

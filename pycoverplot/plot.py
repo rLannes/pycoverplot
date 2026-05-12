@@ -170,7 +170,7 @@ def plot(groups, exon="exon", intron_prop=0.30, N=None, alpha=1,
         legend_color.append(group.colors[len(group.colors) // 2])
 
     custom_lines = [Line2D([0], [0], color=x, lw=4) for x in legend_color]
-    plt.gca().legend(handles=custom_lines, labels=legend_name,  bbox_to_anchor=(1.02, 1), loc='upper left'   )
+    plt.gca().legend(handles=custom_lines, labels=legend_name,  bbox_to_anchor=(1.05, 1), loc='upper left'   )
         
     plt.margins(x=0)
     #plt.margins(y=0)
@@ -182,7 +182,7 @@ def plot(groups, exon="exon", intron_prop=0.30, N=None, alpha=1,
 
     plt.xlabel("position (bp)")
 
-
+    
 
     plt.title(title)
     if out:

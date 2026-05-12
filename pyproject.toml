@@ -39,3 +39,5 @@ pycoverplot_gtf = "pycoverplot.coverage_plot:main_pkl"
 where = ["."]
 include = ["pycoverplot*"]
 
+[project.optional-dependencies]
+test = ["pytest>=7.0"]
