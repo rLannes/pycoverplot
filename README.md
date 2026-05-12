@@ -1,3 +1,4 @@
+![tests](https://github.com/rLannes/pycoverplot/actions/workflows/ci.yml/badge.svg)
 # pycoverplot
 
 Plot read coverage from BAM files over genomic regions. High speed (Rust backed) Built with RNA-seq in mind but compatible with any aligned data in BAM format.
