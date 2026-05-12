@@ -4,12 +4,11 @@
 
 **Fast read-coverage plots from BAM files, straight to publication-ready figures.**
 
-//![example coverage plot](asset/example.png)
-
 <p align="center">
   <img src="asset/example.png" alt="example coverage plot" width="600">
 </p>
-*12 BAM files, a 2.24 Mb gene compressed to a readable 14 kb view, replicate-averaged across 4 groups — plotted in 4.4 seconds(12 cpus HPC).*
+
+*12 BAM files, a 2.24 Mb gene compressed to a readable 14 kb view, replicate-averaged across 4 groups — plotted in ~4 seconds(12 cpus HPC).*
 
 pycoverplot reads BAM files directly through a Rust backend. No bigWig intermediate, no separate normalization step, no shell pipeline. Built for RNA-seq but works on any aligned data.
 
@@ -30,12 +29,12 @@ Parsing a full Ensembl or GENCODE GTF is the slowest step in most coverage workf
 
 
 
-> Warning: Index are pickle file You should not use pickle files you have not created yourself, as there is a security risk in running unknown pickle files. you also may want to make sure they have not be tempered with.
+> Security note: GTF index files are pickled Python objects. Only use index files you generated yourself or trust the source of — pickle files can execute arbitrary code when loaded.
 
 ---
 
 ## Installation
-you need a recent rust compiler (january 2026+)
+you need a recent rust compiler (1.93.0 # or more recent)
 
 ```bash
 # it is not on pip serveur yet
@@ -43,13 +42,11 @@ you need a recent rust compiler (january 2026+)
 git clone https://github.com/rLannes/pycoverplot
 cd pycoverplot
 pyproject-build --wheel # does the heavy lifting
-Successfully built pycoverplot-0.1.0-py3-none-any.whl
+# Successfully built pycoverplot-0.1.0-py3-none-any.whl
 pip install pycoverplot-0.1.0-py3-none-any.whl
 ```
 
-All dependencies are made by me, and are installed automatically. Including the Rust backend (`Rust_covpyo3`) and the GTF parser (`gtf_pyparser`).
 
-you may need to install glibc.
 ---
 
 ## Requirements
@@ -67,11 +64,11 @@ you may need to install glibc.
 Plot coverage of exon (see --exon argument to include intron) for two groups over an annotated gene:
 
 ```bash
-# index the gtf (run once, considerable speed up)
+# Pre-build a GTF index (optional, run once — speeds up all subsequent runs):
 pycoverplot_gtf --file annotation.gtf
 
 
-pycoverplot 
+pycoverplot \
     --bam ctrl_rep1.bam ctrl_rep2.bam --color PALETTE_BLUE \
     --bam treat_rep1.bam treat_rep2.bam --color PALETTE_RED \
     --group_name ctrl treatment \
@@ -92,7 +89,7 @@ pycoverplot
 --color_odd plot every other feature (exon/intorn in differene color) or every even intron in different color
 
  
-## Plot coverage over a custom genomic interval instead of an annotated gene:
+### Plot coverage over a custom genomic interval instead of an annotated gene:
 
 ```bash
 pycoverplot
@@ -101,9 +98,6 @@ pycoverplot
     --out figure.pdf
 ```
 
-### real example with time:
-using the data at https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE268126 aligned with STAR.
-the genes is kl-3  
 
 
 
@@ -153,7 +147,7 @@ target_intervals = get_intervall(
 
 for target_name, target_interval in target_intervals.items():
 
-    for g in group: # reinitialise the coverage value
+    for g in groups: # reinitialise the coverage value
         g.cover = []
 
     update_group_coverage(
@@ -244,10 +238,12 @@ Each built-in palette provides 5 colors. For groups with more than 5 files, use 
 | `--rasterize` | rasterize the figure |
 | `--out_file` | Output file path. Format inferred from extension (`.pdf`, `.png`, `.svg`). |
 | `--title` | Plot title. |
+| `--color_even` | color every even feature |
+| `--color_odd` | color every odd feature  |
 
 
 
-### troobleshooting:
+### Troubleshooting:
 
 #### plot is empty or very few reads, and I am sure that should not append!
 check the LibLayout, flag_in, flag_out, parameter,
