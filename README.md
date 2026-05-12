@@ -4,8 +4,10 @@
 
 **Fast read-coverage plots from BAM files, straight to publication-ready figures.**
 
-![example coverage plot](asset/example.png)
-
+//![example coverage plot](asset/example.png)
+<p align="center">
+  <img src="asset/example.png" alt="example coverage plot" width="900">
+</p>
 *12 BAM files, a 2.24 Mb gene compressed to a readable 14 kb view, replicate-averaged across 4 groups — plotted in 4.4 seconds(12 cpus HPC).*
 
 pycoverplot reads BAM files directly through a Rust backend. No bigWig intermediate, no separate normalization step, no shell pipeline. Built for RNA-seq but works on any aligned data.
