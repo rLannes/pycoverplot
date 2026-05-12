@@ -11,13 +11,21 @@ pycoverplot_gtf --file <gtf file>
 This will read the GTF and create an index file and a pickle file. once that done it is transparent for you as pycoverplot check idf the index and pkl file exist, and if they do use them.
 
 ⚠️ Warning: You should not use pickle files you have not created yourself, as there is a security risk in running unknown pickle files. you also may want to make sure they have not be tempered with.
+
+⚠️ Warning: API may change in future version.
 ---
 
 ## Installation
+you need a recent rust compiler (january 2026+)
 
 ```bash
 # it is not on pip serveur yet
-pip install -e /lab/solexa_yamashita/people/Romain/Code/PackageCommonBioinfo/pycoverplot
+# build a wheel 
+git clone https://github.com/rLannes/pycoverplot
+cd pycoverplot
+pyproject-build --wheel # does the heavy lifting
+Successfully built pycoverplot-0.1.0-py3-none-any.whl
+pip install pycoverplot-0.1.0-py3-none-any.whl
 ```
 
 All dependencies are made by me, and are installed automatically. Including the Rust backend (`Rust_covpyo3`) and the GTF parser (`gtf_pyparser`).
@@ -40,6 +48,10 @@ you may need to install glibc.
 Plot coverage of exon (see --exon argument to include intron) for two groups over an annotated gene:
 
 ```bash
+# index the gtf (run once, considerable speed up)
+pycoverplot_gtf --file annotation.gtf
+
+
 pycoverplot 
     --bam ctrl_rep1.bam ctrl_rep2.bam --color PALETTE_BLUE \
     --bam treat_rep1.bam treat_rep2.bam --color PALETTE_RED \
@@ -48,8 +60,20 @@ pycoverplot
     --gtf annotation.gtf --gene_id ENSMUSG00000028494 \
     --out figure.pdf
 ```
+--bam flag define a bam group, you can repeat it to define multiple bam group;
+--color argument define the color of a given bam group( either one color or must match the nuber of bam file in a bam group)
 
-Plot coverage over a custom genomic interval instead of an annotated gene:
+
+### Some option worth knowing:
+--exon [exon|intron|intron_partial]: plot only the exon, plot the exon + intron or plot the ewon + compress the intron (usefull for very large intron)
+--average plot the average with enveloope (two times the standard deviation)
+--smooth average windows smoothing
+--thread option (multi cpu)
+--gene_id: you can plot a specific transcript using geneid:transcriptid
+--color_odd plot every other feature (exon/intorn in differene color) or every even intron in different color
+
+ 
+## Plot coverage over a custom genomic interval instead of an annotated gene:
 
 ```bash
 pycoverplot
@@ -57,6 +81,13 @@ pycoverplot
     --inter chr1,+,1000000,1050000 \
     --out figure.pdf
 ```
+
+### real example with time:
+using the data at https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE268126 aligned with STAR.
+the genes is kl-3  
+
+
+
 
 ---
 
@@ -103,7 +134,7 @@ target_intervals = get_intervall(
 
 for target_name, target_interval in target_intervals.items():
 
-    for g in group:
+    for g in group: # reinitialise the coverage value
         g.cover = []
 
     update_group_coverage(
@@ -190,5 +221,22 @@ Each built-in palette provides 5 colors. For groups with more than 5 files, use 
 | `--thread` | Number of parallel threads. Default: `1`. |
 | `--width` | Figure width in inches. Default: `8`. |
 | `--height` | Figure height in inches. Default: `5`. |
+| `--average` | plot the average for each bam group with envelope |
+| `--rasterize` | rasterize the figure |
 | `--out_file` | Output file path. Format inferred from extension (`.pdf`, `.png`, `.svg`). |
 | `--title` | Plot title. |
+
+
+
+### troobleshooting:
+
+#### plot is empty or very few reads, and I am sure that should not append!
+check the LibLayout, flag_in, flag_out, parameter,
+
+#### How to include all read not just primary alignment?
+use "--flag_out 0 --flag_in 0 --mapq 0" options
+
+#### plot take a long time to open
+use the rasterize option
+
+

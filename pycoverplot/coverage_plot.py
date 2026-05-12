@@ -776,7 +776,7 @@ def main():
              "Accepts a named color or a hex RGB value (e.g. '#fdf3e3'). "
              "Use together with --color_even.")
     
-    plot_option_group.add_argument("--rasterize", action='store_true')
+    plot_option_group.add_argument("--rasterize", action='store_true', help="rasterize the file helpful with average option")
     plot_option_group.add_argument("--title", type=str, metavar="STRING", default="Title",
                                     help="base title for the plot")
 
