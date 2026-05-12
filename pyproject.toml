@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pycoverplot"
-version = "0.1.0"
+version = "0.2.0b1"
 description = "BAM coverage plot"
 dependencies = [
     "numpy",
@@ -20,7 +20,7 @@ authors = [
 ]
 keywords = ["bioinformatics", "BAM", "visualisation", "plotting", "rnaseq",  "genomics", "Alignment"]
 classifiers = [
-    "Development Status :: 5 - Stable",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
     "Programming Language :: Python :: 3",
@@ -30,6 +30,10 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+[project.urls]
+Homepage = "https://github.com/rLannes/pycoverplot"
+Repository = "https://github.com/rLannes/pycoverplot"
+Issues = "https://github.com/rLannes/pycoverplot/issues"
 
 [project.scripts]
 pycoverplot = "pycoverplot.coverage_plot:main"

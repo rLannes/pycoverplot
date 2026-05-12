@@ -16,7 +16,7 @@ from gtf_pyparser import Interval, parse_gtf
 
 # TODO future NICE TO HAVE:
 # 1 - support passing glob for bam name
-# 2-
+
 mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams['ps.fonttype'] = 42
 
