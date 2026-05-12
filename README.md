@@ -1,19 +1,34 @@
-![tests](https://github.com/rLannes/pycoverplot/actions/workflows/ci.yml/badge.svg)
 # pycoverplot
-
-Plot read coverage from BAM files over genomic regions. High speed (Rust backed) Built with RNA-seq in mind but compatible with any aligned data in BAM format.
-
-Coverage is computed with a fast Rust backend. Reads are counted per strand and per base, then rendered as a publication-ready matplotlib figure. Multiple experimental groups can be overlaid on the same plot for direct visual comparison.
+![tests](https://github.com/rLannes/pycoverplot/actions/workflows/ci.yml/badge.svg)
 
 
-Reading BAM files is pretty fast due to the Rust backend, but reading GTF is the longest time sink in most cases. To speed it up, you can create an index
-Run:
-pycoverplot_gtf --file <gtf file> 
-This will read the GTF and create an index file and a pickle file. once that done it is transparent for you as pycoverplot check idf the index and pkl file exist, and if they do use them.
+**Fast read-coverage plots from BAM files, straight to publication-ready figures.**
 
-⚠️ Warning: You should not use pickle files you have not created yourself, as there is a security risk in running unknown pickle files. you also may want to make sure they have not be tempered with.
+![example coverage plot](asset/ENSMUSG00000039419_ENSMUST00000114641.pdf)
 
-⚠️ Warning: API may change in future version.
+*12 BAM files, a 2.24 Mb gene compressed to a readable 14 kb view, replicate-averaged across 4 groups — plotted in 4.4 seconds(12 cpus HPC).*
+
+pycoverplot reads BAM files directly through a Rust backend. No bigWig intermediate, no separate normalization step, no shell pipeline. Built for RNA-seq but works on any aligned data.
+
+### Why pycoverplot
+
+- **Direct BAM → plot.** Skip the `bamCoverage` → bigWig → `pyGenomeTracks` pipeline entirely.
+- **Replicate-aware.** Group BAMs by condition, average automatically, render variance as a confidence band.
+- **Intron compression.** Rescale long introns to a fixed fraction of the plot width so short 5′ exons stay readable in megabase-scale genes.
+- **Fast by design.** Parallel BAM reading via Rust, optional GTF index caching for repeated runs.
+- **Sensible defaults.** RPM-normalized from STAR logs out of the box. Strand-aware. CLI and Python API.
+
+> Early-stage software — the API may change between versions. Pin to a commit hash if you need reproducibility.
+
+ 
+#### A note on GTF parsing
+ 
+Parsing a full Ensembl or GENCODE GTF is the slowest step in most coverage workflows. pycoverplot can builds a sidecar index (`mygtf.gtf.pbi` + `mygtf.gtf.pbi.bi`) and uses it on every subsequent run, so repeated plots against the same annotation are effectively free at the GTF stage. The index is auto-detected — no extra flag required.
+
+
+
+> Warning: Index are pickle file You should not use pickle files you have not created yourself, as there is a security risk in running unknown pickle files. you also may want to make sure they have not be tempered with.
+
 ---
 
 ## Installation
