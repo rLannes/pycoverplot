@@ -10,7 +10,7 @@ dependencies = [
     "numpy",
     "matplotlib",
     "gtf-pyparser==0.2.1",
-    "Rust_covpyo3 @ git+https://github.com/rLannes/Rust_covpyo3.git@master",
+    "Rust-covpyo3==0.2.4",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
