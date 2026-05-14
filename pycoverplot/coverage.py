@@ -280,6 +280,7 @@ class Coverage():
                 intron += inter.length
         
         prop_intron = intron / (exon + intron)
+        coefficient = 1
         if prop_intron > max_prop:       
             final_intron_size = (exon*max_prop)/(1-max_prop)
             coefficient = final_intron_size / intron

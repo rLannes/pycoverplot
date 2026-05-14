@@ -1,15 +1,15 @@
 [build-system]
-requires = ["setuptools>=64"]
+requires = ["setuptools>=64", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "pycoverplot"
-version = "0.2.0b1"
+dynamic = ["version"]
 description = "BAM coverage plot"
 dependencies = [
     "numpy",
     "matplotlib",
-    "gtf_pyparser @ git+https://github.com/rLannes/gtf_pyparser.git@master",
+    "gtf-pyparser==0.2.1",
     "Rust_covpyo3 @ git+https://github.com/rLannes/Rust_covpyo3.git@master",
 ]
 requires-python = ">=3.10"

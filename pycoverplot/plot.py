@@ -190,4 +190,4 @@ def plot(groups, exon="exon", intron_prop=0.30, N=None, alpha=1,
 
     if return_fig:
         return fig
-        
+    plt.close()
