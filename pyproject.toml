@@ -13,7 +13,7 @@ dependencies = [
     "numpy",
     "matplotlib",
     "gtf-pyparser==0.2.1",
-    "Rust-covpyo3==0.2.4",
+    " Rust-covpyo3",
 ]
 requires-python = ">=3.10"
 readme = "README.md"
