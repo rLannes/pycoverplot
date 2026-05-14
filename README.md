@@ -35,8 +35,6 @@ Parsing a full Ensembl or GENCODE GTF is the slowest step in most coverage workf
 
 ## Installation
 
-
-
 ### recommanded
 ```bash
 pip install pycoverplot
