@@ -71,7 +71,7 @@ for target_name, target_interval in target_intervals.items():
 For command-line usage see plot_coverage.py or the README.
 """
 
-__version__ = "0.1.0"
+from pycoverplot._version import __version__
 
 from pycoverplot.coverage_plot import (
     Groups,

@@ -34,20 +34,28 @@ Parsing a full Ensembl or GENCODE GTF is the slowest step in most coverage workf
 ---
 
 ## Installation
-you need a recent rust compiler (1.93.0 # or more recent)
+
+
+
+### recommanded
+```bash
+pip install pycoverplot
+```
+
+### local build
+
+#### rust 
+rust backend is already included.
 
 ```bash
-# it is not on pip serveur yet
 # build a wheel 
 git clone https://github.com/rLannes/pycoverplot
 cd pycoverplot
-pyproject-build --wheel # does the heavy lifting
-# Successfully built pycoverplot-0.1.0-py3-none-any.whl
-pip install pycoverplot-0.1.0-py3-none-any.whl
+python -m build --wheel # does the heavy lifting
+# Successfully built <wheel>
+pip install <wheel>
 ```
 
-
----
 
 ## Requirements
 
