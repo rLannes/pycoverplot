@@ -244,7 +244,7 @@ def get_intervall(gtf, gene_id, inter):
     gtf = str(gtf)
     pkl_file = gtf + ".pbi"
     bi_file = pkl_file + ".bi"
-    if Path(bi_file).is_file and Path(pkl_file).is_file:
+    if Path(bi_file).is_file() and Path(pkl_file).is_file():
         logging.info("gtf index found:\n - {}\n - {}".format(pkl_file, bi_file))
         gtf_obj = IndexGtf(pkl_file, bi_file)
 
