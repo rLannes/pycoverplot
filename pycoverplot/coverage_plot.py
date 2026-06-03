@@ -12,6 +12,7 @@ import pickle
 import re
 import matplotlib.colors as mcolors
 from gtf_pyparser import Interval, parse_gtf
+import Rust_covpyo3
 
 
 # TODO future NICE TO HAVE:
@@ -503,9 +504,43 @@ def update_group_coverage(groups, target_interval, lib_scheme="frFirstStrand", n
         g.add_cover(cover_dict)
 
 
+
+def get_reads_frombai(groups):
+    """
+    Populate each group's ``total_reads`` from .bai files. (total reads mapped)
+    For each BAM file in every group, attempts to locate the .bai files.
+
+    Appends the parsed read count to ``group.total_reads`` for each file,
+    in the same order as ``group.bam_files``.
+
+    Parameters
+    ----------
+    groups : list[Groups]
+        Experimental groups whose ``total_reads`` will be populated in place.
+        Each group's ``bam_files`` must be set before calling this function.
+
+    Returns
+    -------
+    None
+        Groups are modified in place.
+
+    Raises
+    ------
+    AssertionError
+        If no bai file can be retrieved for any BAM file.
+    """
+    for group in groups:
+                 
+        for file in group.bam_files:
+            all_count = Rust_covpyo3.get_mapped_reads(file)
+            tot_reads = sum([0 if x[0] == "Unammped" else x[1] for x in all_count])
+            group.total_reads.append(tot_reads)
+
+
 def get_reads_fromstar(groups):
     """
-    Populate each group's ``total_reads`` from STAR ``Log.final.out`` files.
+    Populate each group's ``total_reads`` from STAR ``Log.final.out`` files (uniquely mapped reads).
+
 
     For each BAM file in every group, attempts to locate the associated STAR
     log file by trying three naming conventions in order:

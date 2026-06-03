@@ -2,6 +2,12 @@
 ![tests](https://github.com/rLannes/pycoverplot/actions/workflows/ci.yml/badge.svg)
 
 
+## change notes:
+
+>v0.3:
+>> from user request: change the way pycoverplot compute the total number of reads form normalisation. pycoverplot by default will use the information in the .bai file which correspond to the total number of reads mapped. **this will count multi mapping reads multiple time** the previous option to parse the output of the STAR file is still available with the --starlog flag.
+
+
 **Fast read-coverage plots from BAM files, straight to publication-ready figures.**
 
 <p align="center">

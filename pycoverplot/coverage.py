@@ -216,7 +216,7 @@ class Coverage():
         else: 
             return (this_cover, this_intervall)
         
-    def empyt(self):
+    def empty(self):
         if len(self.cover) > 0:
             return False
         return True
