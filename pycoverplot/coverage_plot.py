@@ -537,7 +537,7 @@ def get_reads_frombai(groups):
     for group in groups:
                  
         for file in group.bam_files:
-            all_count = Rust_covpyo3.get_mapped_reads(file)
+            all_count = Rust_covpyo3.get_mapped_reads(str(file))
             tot_reads = sum([0 if x[0] == "Unammped" else x[1] for x in all_count])
             group.total_reads.append(tot_reads)
 
