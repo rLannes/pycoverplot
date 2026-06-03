@@ -24,7 +24,7 @@ mpl.rcParams['ps.fonttype'] = 42
 
 
 REG_IS_HEXA = re.compile(r"^(#[A-Fa-f0-9]{6}$)|(#[A-Fa-f0-9]{8}$)")
-REG_IS_INTERVALL = re.compile(r"^(\w+),([\+|\-]),(\d+)\,(\d+)")
+REG_IS_INTERVALL = re.compile(r"^(\w+):(\d+)\-(\d+)\(?([\+|\-])?\)?")
 logger = logging.getLogger(__name__)
 
 
@@ -182,7 +182,8 @@ def get_intervall(gtf, gene_id, inter):
     gtf parsing is slow to spead things up you can run pycoverplot_gtf --gtf <gtf file> --pkl <pickle file.pkl>
     this will read the gtf and create a pkl file wich is much faster to read. So if you give this function a pkl it will unpickle it and consider it is the gtf.
 
-    When ``inter`` is provided, each string is parsed with ``REG_IS_INTERVALL``
+    When ``inter`` is provided, each string is parsed must match the following format:
+    chr:start-end(strand) strand is option
     and assembled into ``Interval`` objects with ``feature_`` set to
     ``"exon"``. All intervals must be on the same chromosome.
 
@@ -199,7 +200,7 @@ def get_intervall(gtf, gene_id, inter):
         a transcript ID suffix in the form ``"GENE_ID:TRANSCRIPT_ID"``.
         Required when ``inter`` is ``None``.
     inter : list[str] or None
-        Explicit interval strings in the format ``"CHROM,STRAND,START,END"``.
+        Explicit interval strings in the format ``"CHROM:START,END(+|-)"``.
         When provided, ``gtf`` and ``gene_id`` are ignored.
 
     Returns
@@ -227,15 +228,19 @@ def get_intervall(gtf, gene_id, inter):
                     logger.error("chromosome must be the same")
                     raise AssertionError
                 chr_p = chr_
-                strand = m.group(2)
-                start = int(m.group(3))
-                end = int(m.group(4))
+                
+                start = int(m.group(2))
+                end = int(m.group(3))
+                strand = "+"
+                print(m.groups())
+                if m.groups()[3]:
+                    strand = m.group(4)
                 try:
                     assert start < end
                 except:
                     logger.error("INTERVAL: {} START is GREATER then END".format("e"))
                     raise
-                sub_res.append(Interval(chr_, strand, start, end, attr={"feature_": "exon"}))
+                sub_res.append(Interval(chr_, start, end, strand, attribute={"feature_": "exon"}))
             else:
                 logger.error("INTERVAL: {} missformed".format(e))
                 raise AssertionError 
@@ -691,16 +696,16 @@ def main():
              "Example: --group_name ctrl treatment. "
              "Defaults to numeric group indices (Group 1, Group 2, …) when omitted." )
     
-    bam_group.add_argument("--read_count", nargs="+", action='append',
-                        metavar="int",
-                         help="Total read count(s) to use for depth normalization, one value per group "
-                        "in the same order as --bam. "
-                        "By default the tool automatically retrieves read counts from the "
-                        "STAR-generated log files (Log.final.out) expected to be in the same "
-                        "directory as each BAM file. Use this option to override that behaviour "
-                        "when those files are unavailable or when you want to normalize against "
-                        "a specific count (e.g. reads mapping to a particular chromosome). "
-                        "Has no effect when --NoNormalize is set.")
+
+    bam_group.add_argument("--starlog", action="store_true", help="by default normalization is done using the total number of reads mapped drecover from the bai file. " \
+    "use this to instead retrieves read counts from the STAR-generated log files ")
+    #bam_group.add_argument("--read_count", nargs="+", action='append',
+    #                    metavar="int",
+    #                     help="by default normalization is done using the total number of reads mapped drecover from the bai file."
+    #                     "use this to instead get specify Total read count(s) to use for depth normalization, one value per group "
+    #                    "when those files are unavailable or when you want to normalize against "
+    #                    "a specific count (e.g. reads mapping to a particular chromosome). "
+    #                    "Has no effect when --NoNormalize is set.")
     
 
     parse.add_argument("--color",  action='append', nargs="+", metavar="COLOR",
@@ -932,16 +937,19 @@ def main():
         groups.append(Groups(this_color, bam_path))
         groups[-1].group_name = groups_name[i]
 
-        if not args.NoNormalize and args.read_count:
-            this_count = args.read_count[i]
-            try:
-                assert len(bam_files) == len(this_count)
-            except:
-                logging.error("if using read count must match number of bam_files: {} bam file {} reads count".format((len(bam_files)), (len(this_count))))
+        #if not args.NoNormalize and args.read_count:
+        #    this_count = args.read_count[i]
+        #    try:
+        #        assert len(bam_files) == len(this_count)
+        #    except:
+        #        logging.error("if using read count must match number of bam_files: {} bam file {} reads count".format((len(bam_files)), (len(this_count))))
 
 
     if not args.NoNormalize:
-        get_reads_fromstar(groups)
+        if args.starlog:
+            get_reads_fromstar(groups)
+        else:
+            get_reads_frombai(groups)
 
     files = []
     for g in groups:

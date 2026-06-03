@@ -12,8 +12,8 @@ description = "BAM coverage plot"
 dependencies = [
     "numpy",
     "matplotlib",
-    "gtf-pyparser==0.2.1",
-    "Rust-covpyo3",
+    "gtf-pyparser",
+    "Rust-covpyo3>=0.3.1",
 ]
 requires-python = ">=3.10"
 readme = "README.md"

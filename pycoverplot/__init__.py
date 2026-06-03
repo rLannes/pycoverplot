@@ -80,6 +80,7 @@ from pycoverplot.coverage_plot import (
     color_list,
     get_file_path,
     get_reads_fromstar,
+    get_reads_frombai,
 )
 
 from pycoverplot.plot import plot
