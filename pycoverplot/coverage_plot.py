@@ -827,17 +827,17 @@ def main():
 
 
     qc_group = parse.add_argument_group("QC Options")
-    qc_group.add_argument("--mapq", default=13,
+    qc_group.add_argument("--mapq", default=13, type=int,
                     help="Minimum mapping quality (MAPQ) score required for a read to be "
                     "included. Reads with a MAPQ below this threshold are discarded. "
                     "Default: 13. For STAR alignments, MAPQ 255 indicates a uniquely "
                     "mapping read; values below 13 typically indicate multi-mappers.")
-    qc_group.add_argument("--flag_in", default=0, 
+    qc_group.add_argument("--flag_in", default=0, type=int,
                 help="SAM bitwise flag: only reads whose flags match this value are "
              "included. Default: 0 (no flag required). "
              "See https://broadinstitute.github.io/picard/explain-flags.html "
              "for flag definitions.")
-    qc_group.add_argument("--flag_out", default=256,
+    qc_group.add_argument("--flag_out", default=256, type=int,
                            help="SAM bitwise flag: reads matching this value are excluded. "
              "Default: 256 (removes non-primary alignments, i.e. keeps only the "
              "primary alignment for each read). "
@@ -967,7 +967,7 @@ def main():
         logging.info("reading bam file getting value for {}.".format(target_name))
         cover_dict = coverage.get_Coverage_intervall(files, target_interval,
                                                     lib_scheme=args.LibLayout, n_thread=args.thread,
-                                                    mapq=args.mapq, flag_in=args.flag_in, flag_out=args.flag_out) 
+                                                    mapq=int(args.mapq), flag_in=args.flag_in, flag_out=args.flag_out) 
         for g in groups:
             g.add_cover(cover_dict)
 
