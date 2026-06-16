@@ -862,6 +862,7 @@ def main():
     args = parse.parse_args() 
 
     # validate argument
+    
     level = logging.INFO
     match args.loglevel:
         case "INFO":
