@@ -2,6 +2,8 @@
 ![tests](https://github.com/rLannes/pycoverplot/actions/workflows/ci.yml/badge.svg)
 
 
+Contribution, suggestion are warmly welcomed! please open an issue with the enhancement tag 
+
 ## change notes:
 
 >v0.3:
