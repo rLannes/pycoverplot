@@ -15,6 +15,26 @@ from gtf_pyparser import Interval, parse_gtf
 import Rust_covpyo3
 
 
+def linespace(start, stop, num):
+    """return num values equllqy spaced between start and stop, inclusive"""
+    if stop <= start:
+        raise ValueError("end must be greater than start")
+    if num < 0:
+        raise ValueError("num must be greater than 0")
+    if not isinstance(num, int):
+        raise ValueError("num must be an integer")
+    if num == 0:
+        return []
+    if num == 1:
+        return [start + (stop - start) / 2]
+    delta = (stop - start) / (num - 1)
+    values = []
+    for i in range(num):
+        values.append(start + delta * i)
+    values[-1] = stop
+    return values
+
+
 # TODO future NICE TO HAVE:
 # 1 - support passing glob for bam name
 
@@ -121,13 +141,14 @@ def color_list(this_color, size, PALETTE_DICT=PALETTE_DICT):
 
     
     if (cmap := get_valid_cmap(this_color[0])):
-        cpt = 0.2
-        step = 0.8 / size
+        linespace(0.2, 1, size)
+        #cpt = 0.2
+        #step = 0.8 / size
         this_color = []
         
-        for _ in range(size):
-            this_color.append(mcolors.to_hex(cmap(cpt)))
-            cpt += step
+        for x in linespace(0.2, 1, size):
+            this_color.append(mcolors.to_hex(cmap(x)))
+            #cpt += step
             
     for e in this_color:
         try:

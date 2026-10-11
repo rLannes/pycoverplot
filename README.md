@@ -207,9 +207,10 @@ Two options are available and are mutually exclusive:
 
 ## Normalisation
 
-By default, coverage is normalised to reads per million (RPM) using the uniquely mapped read count read from the STAR `Log.final.out` file expected alongside each BAM file. Normalisation can be disabled with `--NoNormalize`.
+By default, coverage is normalised to reads per million (RPM) using the mapped reads from the .bai file expected alongside each BAM file. Normalisation can be disabled with `--NoNormalize`.
 
-If STAR logs are not available, read counts can be provided manually with `--read_count` (CLI) or by setting `group.total_reads` directly (API).
+On can instead use the uniquely mapped reads from STAR log using `--starlog`
+read counts can be provided manually with `--read_count` (CLI) or by setting `group.total_reads` directly (API).
 
 ---
 
