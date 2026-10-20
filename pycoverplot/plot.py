@@ -5,11 +5,8 @@ import numpy as np
 import matplotlib as mpl
 from matplotlib.lines import Line2D
 import matplotlib.pyplot as plt
-
 from pathlib import Path
-#from gtf_pyparser import Interval, get_intron
-#from coverage import Coverage
-# version april 12 2024
+
 
 mpl.rcParams['pdf.fonttype'] = 42
 mpl.rcParams['ps.fonttype'] = 42
