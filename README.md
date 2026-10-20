@@ -11,6 +11,7 @@ Contribution, suggestion are warmly welcomed! please open an issue with the enha
 >> the older option to directly pass read number have been removed. 
 >> MINOR: no more running on hold when error from the rust backend (fixed communication between python and rust). mostly due to wrong corrdinate passed (i.e. chromosome name not found in the bam)
 
+## future improving how the color are managed
 
 **Fast read-coverage plots from BAM files, straight to publication-ready figures.**
 
@@ -110,7 +111,7 @@ pycoverplot \
 ```bash
 pycoverplot
     --bam ctrl.bam --bam treat.bam \
-    --inter chr1,+,1000000,1050000 \
+    --inter 1:1000000-1050000+ \
     --out figure.pdf
 ```
 
@@ -201,7 +202,7 @@ Two options are available and are mutually exclusive:
 
 **GTF + gene ID** — plot all transcripts of a gene, or restrict to a specific transcript using the `GENE_ID:TRANSCRIPT_ID` syntax. The `gene_id` must match the value in your GTF file exactly (it is database-dependent and differs from the gene symbol).
 
-**Custom interval** — plot any arbitrary genomic region using `--inter CHROM,STRAND,START,END`. Multiple intervals on the same chromosome can be provided and will be concatenated in the plot. must be on same chromosome and same strand!
+**Custom interval** — plot any arbitrary genomic region using `--inter CHR:START-ENDSTRAND`. Multiple intervals on the same chromosome can be provided and will be concatenated in the plot. must be on same chromosome and same strand!
 
 ---
 

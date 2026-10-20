@@ -688,11 +688,11 @@ def main():
 
         # Plot a custom genomic interval:
         plot --bam ctrl.bam --bam treat.bam \\
-             --inter chr1,+,1000000,1050000
+             --inter chr1:1000000-1050000+
                                     
         # Plot a multiple genomic interval:
         plot --bam ctrl.bam --bam treat.bam \\
-             --inter chr1,+,1000000,1050000 chr1,+,1060000,1070000
+             --inter chr1:1000000-1050000+ chr1:1060000-1070000
     """),
     )
     bam_group = parse.add_argument_group("Bam File Input Options")
@@ -778,7 +778,7 @@ def main():
     what_to_plot_group.add_argument("--inter", nargs="+",
                         metavar="CHROM,STRAND,START,END",
                         help="One or more arbitrary genomic intervals to plot, each specified as "
-             "CHROM,STRAND,START,END (comma-separated, no spaces). START must be "
+             "CHR:START-ENDSTRAND. START must be "
              "less than END (0-based coordinates). Multiple intervals are "
              "concatenated in the plot and any genomic space between them is "
              "ignored, which is useful for visualising discontinuous regions such "
@@ -786,7 +786,7 @@ def main():
              "CHRM and strand must be the same"
              "--gtf and --gene_id, and intron proportion scaling (--intron_prop) "
              "is not available. "
-             "Example: --inter chr1,+,1000000,1050000 chr1,+,1100000,1150000")
+             "Example: --inter chr1:1000000-1050000+")
     
     plot_option_group = parse.add_argument_group("Plot Options")
     plot_option_group.add_argument("--exon",  default="exon", choices=["exon", "intron", "intron_partial"],        
